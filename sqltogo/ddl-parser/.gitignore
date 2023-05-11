@@ -1,0 +1,10 @@
+/gen/MySqlParser.tokens
+/gen/MySqlParser.interp
+/gen/MySqlLexer.tokens
+/gen/MySqlLexer.interp
+/grammar/MySqlParser.tokens
+/grammar/MySqlParser.interp
+/grammar/MySqlLexer.tokens
+/grammar/MySqlLexer.interp
+/gen/MySqlLexer.java
+.idea
