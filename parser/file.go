@@ -1,7 +1,3 @@
-// Package parser
-// @description
-// @author      张盛钢
-// @datetime    2023/4/10 13:48
 package parser
 
 import (
