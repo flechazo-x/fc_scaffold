@@ -68,10 +68,16 @@ func (c *Config) UpdateConfig(r *http.Request) error {
 	if err := json.Unmarshal([]byte(payload), &cnf); err != nil {
 		return err
 	}
-	if err := serviceCfg.Inspect(cnf); err != nil {
-			return err
+	oldCfg := cfg
+	if err := SetCfg(cnf); err != nil {
+		return err
 	}
-	return SetCfg(cnf)
+
+	if err := serviceCfg.Inspect(cfg); err != nil {
+		_ = SetCfg(oldCfg)
+		return err
+	}
+	return nil
 }
 
 func GetCfg() *Config {
