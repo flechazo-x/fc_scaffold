@@ -1,7 +1,3 @@
-// Package activity
-// @description
-// @author      张盛钢
-// @datetime    2023/4/10 16:22
 package activity
 
 const ActFunc = `

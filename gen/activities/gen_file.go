@@ -1,7 +1,3 @@
-// Package activities
-// @description
-// @author      张盛钢
-// @datetime    2023/4/10 14:39
 package activities
 
 import (
