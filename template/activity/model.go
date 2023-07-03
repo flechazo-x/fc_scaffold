@@ -53,7 +53,17 @@ func ({{.prefix}} *{{.structName}}) PayNotifyCallback(ctx *trace.Context, o *bas
 }
 
 func ({{.prefix}} *{{.structName}}) PayAfter(ctx *trace.Context, o *bases.Options) error {
-	return charge.Settlement(ctx, o.ActId, o.CallbackId, o.Delivery.Balance)
+		settleOpt := &charge.SettlementOptions{
+		AwardOperate:   charge.Operate(o.AwardOperate),
+		MergeAwardFunc: exchange.MergeJsonToJson,
+		ActId:          o.ActId,
+		CallbackId:     o.CallbackId,
+		Award:          o.InputProps,
+	}
+	if o.Delivery != nil {
+		settleOpt.AfterBalance = o.Delivery.Balance
+	}
+	return charge.Settlement(ctx, settleOpt)
 }
 `
 
@@ -76,5 +86,6 @@ import (
 	"casino/module/business/service/activity/base/static"
 	bases "casino/module/business/service/base"
 	"github.com/aaagame/common/middleware/trace"
+	"casino/module/business/service/prop/exchange"
 )
 `

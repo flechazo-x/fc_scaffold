@@ -2,6 +2,7 @@ package activities
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fc_scaffold/config"
 	"fc_scaffold/parser"
@@ -66,10 +67,21 @@ func GenConfig(c *config.Config) (string, error) {
 	if c == nil {
 		return "", errors.New("config is nil")
 	}
-	output, err := parser.With("Cofing").Parse(activity.Cofing).GoFmt(true).Execute(map[string]interface{}{
-		"pkg":   c.PkgName,
-		"actID": c.Id,
-	})
+	var (
+		output = new(bytes.Buffer)
+		err    error
+	)
+	if c.IsSupportTasks == 1 {
+		output, err = parser.With("Cofing").Parse(activity.TaskConfig).GoFmt(true).Execute(map[string]interface{}{
+			"pkg":   c.PkgName,
+			"actID": c.Id,
+		})
+	} else {
+		output, err = parser.With("Cofing").Parse(activity.Cofing).GoFmt(true).Execute(map[string]interface{}{
+			"pkg":   c.PkgName,
+			"actID": c.Id,
+		})
+	}
 	if err != nil {
 		return "", fmt.Errorf("[GenConfig] Execute  Error:%s", err.Error())
 	}

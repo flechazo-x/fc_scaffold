@@ -284,3 +284,175 @@ const HtmlStr = `<!DOCTYPE html>
 
 </html>
 `
+
+const SqlToGo = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SqlToGo</title>
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fade-up 1s forwards;
+        }
+
+        label {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e9e9e9;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .text-animation {
+            animation-duration: 2s;
+            animation-name: slidein;
+        }
+
+        @keyframes slidein {
+            from {
+                margin-left: -100%;
+                width: 300%;
+                opacity: 0;
+            }
+
+            to {
+                margin-left: 0%;
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fade-up 1s 0.5s forwards;
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1 class="title text-animation">SqlToGo</h1>
+
+    <label for="Filepath">文件输出路径:</label>
+    <input type="text" id="Filepath" name="Filepath" placeholder="需要填写绝对路径">
+
+    <label for="TableName">表名:</label>
+    <input type="text" id="TableName" name="TableName" placeholder="数据库中的表名，多个请用英文逗号分开">
+    <div style="display: flex; justify-content: space-between ; width: 100%;">
+        <button type="submit" onclick="submitData()">提交</button>
+        <form action="http://127.0.0.1:8080/scaffold" method="Get">
+            <button type="submit">脚手架</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function submitData() {
+        let data = {
+            Filepath: document.getElementById('Filepath').value,
+            TableName: document.getElementById('TableName').value,
+        };
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://127.0.0.1:8080/sqltogo');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // 存储到localStorage中
+                localStorage.setItem('Filepath', document.getElementById('Filepath').value);
+                alert(xhr.responseText);
+            } else {
+                let err = xhr.statusText + ":" + xhr.responseText
+                alert(err);
+            }
+        };
+        xhr.onerror = function () {
+            alert('请求错误');
+        };
+
+
+        if (data.Filepath.trim() === "") {
+            alert("请输入路径");
+            return;
+        }
+
+        if (data.TableName.trim() === "") {
+            alert("请输入表名");
+            return;
+        }
+        
+        // 查找逗号的位置
+        const commaIndex = data.TableName.indexOf("，");
+        if (commaIndex !== -1) {
+            alert("输入的内容中包含非英文逗号!");
+            return;
+        }
+        xhr.send(JSON.stringify(data));
+    }
+
+    const Filepath = localStorage.getItem('Filepath');
+    // 如果数据存在，将其显示在输入框中
+    if (Filepath) {
+        document.getElementById('Filepath').value = Filepath;
+    }
+</script>
+</body>
+</html>
+`

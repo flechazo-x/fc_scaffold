@@ -24,7 +24,7 @@ func GetObject(ctx *trace.Context, container *manager.Container, delivery *base.
 		return
 	}
 	if oneself, ok = template.(*{{.structName}}); !ok { // 断言失败
-		log.Errorf(static.Act{{.actID}}, "[GetObject]template.(*{{.structName}}) assert failed %s", debug.Stack())
+		log.Errorf(static.Act{{.actID}}, "[GetObject]template.(*{{.structName}}) 断言失败 %s", debug.Stack())
 		return
 	}
 	return

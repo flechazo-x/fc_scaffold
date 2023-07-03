@@ -23,8 +23,13 @@ func main() {
 	}
 	if c.IsTable == 1 {
 		fmt.Println(aurora.BgBlue("generate table ~~~"))
-		sqltogo.Run(c.OutputPath+static.SqlGoPath, c.TableName...)
+		if err1 := sqltogo.Run(c.OutputPath+static.SqlGoPath, c.TableName...); err1 != nil {
+			panic(err1)
+		}
 	}
 	fmt.Println(aurora.BgBlue("File generated successfully ~~~"))
 
 }
+
+//E:\GoProject\src\work\test_server\branches\beta\module\business\dao\user
+//venture,levelcharge

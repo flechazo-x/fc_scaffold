@@ -28,10 +28,12 @@ func Http() {
 	r.GET("/index", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 		c.Header("Content-Type", "text/html; charset=utf-8")
-		c.String(http.StatusOK, htmlx.HtmlStr)
+		c.String(http.StatusOK, htmlx.SqlToGo)
 		//http.ServeContent(c.Writer, c.Request, "index.html", time.Time{}, bytes.NewReader(htmlBytes))
 	})
-	handleScaffold(r)
+	handleScaffold(r) //处理脚手架
+	sqlToGo(r)        //处理sql转go
+	jumpScaffold(r)   //处理页面跳转到脚手架
 	fmt.Println(aurora.BrightYellow("fc_scaffold: http://127.0.0.1:8080/index"))
 	err := r.Run(":8080")
 	if err != nil {
@@ -87,7 +89,44 @@ func handleScaffold(r *gin.Engine) {
 				"result": "生成成功",
 			})
 		}
+	})
+}
 
+func jumpScaffold(r *gin.Engine) {
+	r.GET("/scaffold", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		c.String(http.StatusOK, htmlx.HtmlStr)
+		//http.ServeContent(c.Writer, c.Request, "index.html", time.Time{}, bytes.NewReader(htmlBytes))
+	})
+}
+
+func sqlToGo(r *gin.Engine) {
+	var cfgs struct {
+		Filepath  string `json:"filepath,omitempty"`  //输出文件路径
+		TableName string `json:"TableName,omitempty"` //表名字
+	}
+
+	// POST 请求处理
+	r.POST("/sqltogo", func(c *gin.Context) {
+		err := c.BindJSON(&cfgs)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+		}
+		tableName := strings.TrimSpace(cfgs.TableName)
+		tableNameList := strings.Split(tableName, ",")
+		err = sqltogo.Run(cfgs.Filepath, tableNameList...)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"result": fmt.Sprintf("出错啦:%s", err.Error()),
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"result": "生成成功",
+			})
+		}
 	})
 }
 
@@ -102,7 +141,9 @@ func genFile(cfg *config.Config) error {
 		return err
 	}
 	if cfg.IsTable == 1 {
-		sqltogo.Run(cfg.OutputPath+static.SqlGoPath, cfg.TableName...)
+		if err1 := sqltogo.Run(cfg.OutputPath+static.SqlGoPath, cfg.TableName...); err1 != nil {
+			return err1
+		}
 	}
 	return nil
 }
